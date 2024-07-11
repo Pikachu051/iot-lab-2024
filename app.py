@@ -49,6 +49,40 @@ async def create_book(book: dict, response: Response, db: Session = Depends(get_
     response.status_code = 201
     return newbook
 
+@router_v1.get('/students')
+async def get_students(db: Session = Depends(get_db)):
+    return db.query(models.Student).all()
+
+@router_v1.get('/students/{student_id}')
+async def get_student(student_id: int, db: Session = Depends(get_db)):
+    return db.query(models.Student).filter(models.Student.id == student_id).first()
+
+@router_v1.post('/students')
+async def create_student(student: dict, response: Response, db: Session = Depends(get_db)):
+    newstudent = models.Student(firstname = student['firstname'], lastname = student['lastname'], dob = student['dob'], id = student['id'], gender = student['gender'])
+    db.add(newstudent)
+    db.commit()
+    db.refresh(newstudent)
+    response.status_code = 201
+    return newstudent
+
+@router_v1.delete('/students/{student_id}')
+async def delete_student(student_id: int, db: Session = Depends(get_db)):
+    db.query(models.Student).filter(models.Student.id == student_id).delete()
+    db.commit()
+    db.refresh()
+    return {
+        'message': 'Student deleted'
+    }
+
+@router_v1.put('/students/{student_id}')
+async def update_student(student_id: int, student: dict, db: Session = Depends(get_db)):
+    db.query(models.Student).filter(models.Student.id == student_id).update(student)
+    db.commit()
+    return {
+        'message': 'Student updated'
+    }
+
 # @router_v1.patch('/books/{book_id}')
 # async def update_book(book_id: int, book: dict, db: Session = Depends(get_db)):
 #     pass
