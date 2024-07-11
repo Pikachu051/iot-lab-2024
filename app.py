@@ -70,7 +70,6 @@ async def create_student(student: dict, response: Response, db: Session = Depend
 async def delete_student(student_id: int, db: Session = Depends(get_db)):
     db.query(models.Student).filter(models.Student.id == student_id).delete()
     db.commit()
-    db.refresh()
     return {
         'message': 'Student deleted'
     }
