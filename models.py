@@ -13,7 +13,7 @@ class Book(Base):
     is_published = Column(Boolean, index=True)
     detail = Column(String, index=True)
     short_desc = Column(String, index=True)
-    category = Column(String, index=True)
+    categories = Column(String, index=True)
 
 class Student(Base):
     __tablename__ = 'students'
