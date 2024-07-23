@@ -59,7 +59,7 @@ async def create_book(book: dict, response: Response, db: Session = Depends(get_
             'message': 'Book already exists'
         }
 
-    newbook = models.Book(title=book['title'], author=book['author'], year=book['year'], is_published=book['is_published'])
+    newbook = models.Book(title=book['title'], author=book['author'], year=book['year'], is_published=book['is_published'], detail=book['detail'], short_desc=book['short_desc'], category=book['category'])
     db.add(newbook)
     db.commit()
     db.refresh(newbook)
