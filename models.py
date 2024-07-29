@@ -23,3 +23,21 @@ class Student(Base):
     id = Column(Integer, primary_key=True, index=True)
     dob = Column(String, index=True)
     gender = Column(String, index=True)
+
+class Menu(Base):
+    __tablename__ = 'menus'
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    description = Column(String, index=True)
+    price = Column(Integer, index=True)
+
+class Order(Base):
+    __tablename__ = 'orders'
+
+    id = Column(Integer, primary_key=True, index=True)
+    menu_id = Column(Integer, ForeignKey('menus.id'))
+    quantity = Column(Integer, index=True)
+    total_price = Column(Integer, index=True)
+    is_completed = Column(Boolean, index=True)
+    order_time = Column(String, index=True)
