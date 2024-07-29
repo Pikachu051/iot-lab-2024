@@ -169,6 +169,26 @@ async def get_menu(response: Response, menu_id: int, db: Session = Depends(get_d
         }
     return db.query(models.Menu).filter(models.Menu.id == menu_id).first()
 
+@router_v1.post('/menus')
+async def create_menu(menu: dict, response: Response, db: Session = Depends(get_db)):
+    if 'name' not in menu or 'image' not in menu or 'price' not in menu:
+        response.status_code = 400
+        return {
+            'message': 'Required data is missing'
+        }
+    elif db.query(models.Menu).filter(models.Menu.name == menu['name']).first() is not None:
+        response.status_code = 409
+        return {
+            'message': 'Menu already exists'
+        }
+
+    newmenu = models.Menu(name = menu['name'], image = menu['image'], price = menu['price'])
+    db.add(newmenu)
+    db.commit()
+    db.refresh(newmenu)
+    response.status_code = 201
+    return newmenu
+
 # Orders
 @router_v1.get('/orders')
 async def get_orders(db: Session = Depends(get_db)):
