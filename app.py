@@ -155,6 +155,50 @@ async def update_student(response: Response, student_id: int, student: dict, db:
         'message': 'Student updated'
     }
 
+# Menus
+@router_v1.get('/menus')
+async def get_menus(db: Session = Depends(get_db)):
+    return db.query(models.Menu).all()
+
+@router_v1.get('/menus/{menu_id}')
+async def get_menu(response: Response, menu_id: int, db: Session = Depends(get_db)):
+    if db.query(models.Menu).filter(models.Menu.id == menu_id).first() is None:
+        response.status_code = 404
+        return {
+            'message': 'Menu not found'
+        }
+    return db.query(models.Menu).filter(models.Menu.id == menu_id).first()
+
+# Orders
+@router_v1.get('/orders')
+async def get_orders(db: Session = Depends(get_db)):
+    return db.query(models.Order).all()
+
+@router_v1.get('/orders/{order_id}')
+async def get_order(response: Response, order_id: int, db: Session = Depends(get_db)):
+    if db.query(models.Order).filter(models.Order.id == order_id).first() is None:
+        response.status_code = 404
+        return {
+            'message': 'Order not found'
+        }
+    return db.query(models.Order).filter(models.Order.id == order_id).first()
+
+@router_v1.post('/orders')
+async def create_order(order: dict, response: Response, db: Session = Depends(get_db)):
+
+    if 'menu_id' not in order or 'quantity' not in order or 'total_price' not in order or 'is_completed' not in order or 'order_time' not in order:
+        response.status_code = 400
+        return {
+            'message': 'Required data is missing'
+        }
+
+    neworder = models.Order(menu_id = order['menu_id'], quantity = order['quantity'], total_price = order['total_price'], is_completed = order['is_completed'], order_time = order['order_time'])
+    db.add(neworder)
+    db.commit()
+    db.refresh(neworder)
+    response.status_code = 201
+    return neworder
+
 app.include_router(router_v1)
 
 if __name__ == '__main__':
