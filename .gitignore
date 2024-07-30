@@ -1,2 +1,5 @@
 .env
+.env.example
+yarn.lock
+__pycache__
 sql.db

@@ -1,5 +1,6 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
-# from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import ARRAY, UUID
+import uuid
 
 from database import Base
 
@@ -13,7 +14,7 @@ class Book(Base):
     is_published = Column(Boolean, index=True)
     detail = Column(String, index=True)
     short_desc = Column(String, index=True)
-    categories = Column(String, index=True)
+    categories = Column(ARRAY(String), index=True)
 
 class Student(Base):
     __tablename__ = 'students'
@@ -29,13 +30,13 @@ class Menu(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
-    image = Column(String, index=True)
+    img = Column(String, index=True)
     price = Column(Integer, index=True)
 
 class Order(Base):
     __tablename__ = 'orders'
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     menu_id = Column(Integer, ForeignKey('menus.id'))
     quantity = Column(Integer, index=True)
     total_price = Column(Integer, index=True)

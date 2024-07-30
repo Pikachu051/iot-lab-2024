@@ -171,7 +171,8 @@ async def get_menu(response: Response, menu_id: int, db: Session = Depends(get_d
 
 @router_v1.post('/menus')
 async def create_menu(menu: dict, response: Response, db: Session = Depends(get_db)):
-    if 'name' not in menu or 'image' not in menu or 'price' not in menu:
+
+    if 'name' not in menu or 'price' not in menu or 'img' not in menu:
         response.status_code = 400
         return {
             'message': 'Required data is missing'
@@ -182,7 +183,7 @@ async def create_menu(menu: dict, response: Response, db: Session = Depends(get_
             'message': 'Menu already exists'
         }
 
-    newmenu = models.Menu(name = menu['name'], image = menu['image'], price = menu['price'])
+    newmenu = models.Menu(name = menu['name'], price = menu['price'], img = menu['img'])
     db.add(newmenu)
     db.commit()
     db.refresh(newmenu)
@@ -206,18 +207,36 @@ async def get_order(response: Response, order_id: int, db: Session = Depends(get
 @router_v1.post('/orders')
 async def create_order(order: dict, response: Response, db: Session = Depends(get_db)):
 
-    if 'menu_id' not in order or 'quantity' not in order or 'total_price' not in order or 'is_completed' not in order or 'order_time' not in order:
+    if 'id' not in order or 'menu_id' not in order or 'quantity' not in order or 'total_price' not in order or 'is_completed' not in order or 'order_time' not in order:
         response.status_code = 400
         return {
             'message': 'Required data is missing'
         }
+    elif db.query(models.Order).filter(models.Order.id == order['id']).first() is not None:
+        response.status_code = 409
+        return {
+            'message': 'Order already exists'
+        }
 
-    neworder = models.Order(menu_id = order['menu_id'], quantity = order['quantity'], total_price = order['total_price'], is_completed = order['is_completed'], order_time = order['order_time'])
+    neworder = models.Order(id = order['id'], menu_id = order['menu_id'], quantity = order['quantity'], total_price = order['total_price'], is_completed = order['is_completed'], order_time = order['order_time'])
     db.add(neworder)
     db.commit()
     db.refresh(neworder)
     response.status_code = 201
     return neworder
+
+@router_v1.patch('/orders/{order_id}')
+async def update_order(response: Response, order_id: int, order: dict, db: Session = Depends(get_db)):
+    if db.query(models.Order).filter(models.Order.id == order_id).first() is None:
+        response.status_code = 404
+        return {
+            'message': 'Order not exists'
+        }
+    db.query(models.Order).filter(models.Order.id == order_id).update(order)
+    db.commit()
+    return {
+        'message': 'Order updated'
+    }
 
 app.include_router(router_v1)
 
