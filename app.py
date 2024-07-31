@@ -218,7 +218,7 @@ async def create_order(order: dict, response: Response, db: Session = Depends(ge
             'message': 'Order already exists'
         }
 
-    neworder = models.Order(id = order['id'], menu_id = order['menu_id'], quantity = order['quantity'], total_price = order['total_price'], is_completed = order['is_completed'], order_time = order['order_time'])
+    neworder = models.Order(id = order['id'], menu_id = order['menu_id'], quantity = order['quantity'], total_price = order['total_price'], is_completed = order['is_completed'], order_time = order['order_time'], note = order['note'])
     db.add(neworder)
     db.commit()
     db.refresh(neworder)
