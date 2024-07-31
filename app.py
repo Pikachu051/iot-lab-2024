@@ -5,6 +5,8 @@ from fastapi import FastAPI, Depends, Response, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
+from uuid import UUID
+
 # Import models
 from database import SessionLocal, engine
 import models
@@ -196,7 +198,7 @@ async def get_orders(db: Session = Depends(get_db)):
     return db.query(models.Order).all()
 
 @router_v1.get('/orders/{order_id}')
-async def get_order(response: Response, order_id: int, db: Session = Depends(get_db)):
+async def get_order(response: Response, order_id: UUID, db: Session = Depends(get_db)):
     if db.query(models.Order).filter(models.Order.id == order_id).first() is None:
         response.status_code = 404
         return {
@@ -226,7 +228,7 @@ async def create_order(order: dict, response: Response, db: Session = Depends(ge
     return neworder
 
 @router_v1.delete('/orders/{order_id}')
-async def delete_order(response: Response, order_id: int, db: Session = Depends(get_db)):
+async def delete_order(response: Response, order_id: UUID, db: Session = Depends(get_db)):
     if db.query(models.Order).filter(models.Order.id == order_id).first() is None:
         response.status_code = 404
         return {
@@ -239,7 +241,7 @@ async def delete_order(response: Response, order_id: int, db: Session = Depends(
     }
 
 @router_v1.patch('/orders/{order_id}')
-async def update_order(response: Response, order_id: int, order: dict, db: Session = Depends(get_db)):
+async def update_order(response: Response, order_id: UUID, order: dict, db: Session = Depends(get_db)):
     if db.query(models.Order).filter(models.Order.id == order_id).first() is None:
         response.status_code = 404
         return {
