@@ -225,6 +225,19 @@ async def create_order(order: dict, response: Response, db: Session = Depends(ge
     response.status_code = 201
     return neworder
 
+@router_v1.delete('/orders/{order_id}')
+async def delete_order(response: Response, order_id: int, db: Session = Depends(get_db)):
+    if db.query(models.Order).filter(models.Order.id == order_id).first() is None:
+        response.status_code = 404
+        return {
+            'message': 'Order not exists'
+        }
+    db.query(models.Order).filter(models.Order.id == order_id).delete()
+    db.commit()
+    return {
+        'message': 'Order deleted'
+    }
+
 @router_v1.patch('/orders/{order_id}')
 async def update_order(response: Response, order_id: int, order: dict, db: Session = Depends(get_db)):
     if db.query(models.Order).filter(models.Order.id == order_id).first() is None:
