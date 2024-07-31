@@ -42,3 +42,4 @@ class Order(Base):
     total_price = Column(Integer, index=True)
     is_completed = Column(Boolean, index=True)
     order_time = Column(String, index=True)
+    note = Column(String, index=True)
